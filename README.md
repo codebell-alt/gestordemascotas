@@ -43,12 +43,12 @@ npm install
 ```bash
 npm run dev
 ```
-**Funcionalidades**
-Registrar, editar y eliminar mascotas
-Registrar, editar y eliminar voluntarios y usuarios
-Visualizar listas de mascotas y usuarios
-Gestión de permisos y roles básicos
-Interfaz amigable y responsiva con Bootstrap
+## Funcionalidades
+- Registrar, editar y eliminar mascotas
+- Registrar, editar y eliminar voluntarios y usuarios
+- Visualizar listas de mascotas y usuarios
+- Gestión de permisos y roles básicos
+- Interfaz amigable y responsiva con Bootstrap
 
 
 
