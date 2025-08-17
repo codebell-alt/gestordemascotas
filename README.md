@@ -1,69 +1,55 @@
-# React + TypeScript + Vite
+# Proyecto Gestor de Mascotas
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descripción del Proyecto
+**Gestor de Mascotas** es una aplicación desarrollada en React para administrar información de mascotas, voluntarios y usuarios.  
+Está diseñada para facilitar la gestión de refugios o clínicas veterinarias, permitiendo **visualizar, agregar, editar y eliminar registros** de manera sencilla.  
 
-Currently, two official plugins are available:
+La aplicación utiliza **Firebase** para almacenar los datos de forma segura y en tiempo real.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Autores
+- **Luis Alexander Castro**  
+  GitHub: [@alexander1143](https://github.com/alexander1143)
 
-## Expanding the ESLint configuration
+- **Isabella Ramírez**  
+  GitHub: [@codebell-alt](https://github.com/codebell-alt)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tecnologías Utilizadas
+- React
+- Firebase (Firestore)
+- JavaScript
+- CSS / Bootstrap
+- HTML5
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Requisitos
+- Node.js (v18+ recomendado)
+- npm o yarn
+- Cuenta en Firebase configurada para el proyecto
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Instalación y Ejecución
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **Clonar el repositorio**:
+
+
+```bash
+git clone https://github.com/codebell-alt/gestordemascotas.git  
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. **Acceder al proyecto e instalar dependencias**:
+```bash
+cd gestordemascotas
+npm install
 ```
+3. **Ejecutar la aplicación en modo desarrollo**:
+```bash
+npm run dev
+```
+**Funcionalidades**
+Registrar, editar y eliminar mascotas
+Registrar, editar y eliminar voluntarios y usuarios
+Visualizar listas de mascotas y usuarios
+Gestión de permisos y roles básicos
+Interfaz amigable y responsiva con Bootstrap
+
+
+
+
