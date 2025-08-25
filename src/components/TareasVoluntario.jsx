@@ -1,21 +1,48 @@
 // src/components/TareasVoluntario.jsx
 import { useEffect, useState } from "react";
-import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db, auth } from "../firebase/config";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 
-export default function TareasVoluntario({ idVoluntario }) {
+export default function TareasVoluntario() {
   const [tareas, setTareas] = useState([]);
-  const [observaciones, setObservaciones] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  // Obtener tareas asignadas a este voluntario
   const getTareas = async () => {
-    const querySnapshot = await getDocs(collection(db, "tareas"));
-    const tareasData = [];
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.log("⚠️ No hay usuario logueado");
+        setLoading(false);
+        return;
+      }
 
-    for (let tareaDoc of querySnapshot.docs) {
-      const tarea = { id: tareaDoc.id, ...tareaDoc.data() };
-      if (tarea.idVoluntario === idVoluntario) {
-        // Obtener datos de la mascota asociada
+      // 1️⃣ Buscar voluntario con idUsuario = uid actual
+      const voluntarioQuery = query(
+        collection(db, "voluntarios"),
+        where("idUsuario", "==", user.uid)
+      );
+      const voluntarioSnap = await getDocs(voluntarioQuery);
+
+      if (voluntarioSnap.empty) {
+        console.log("⚠️ No se encontró voluntario con este usuario");
+        setLoading(false);
+        return;
+      }
+
+      const voluntarioId = voluntarioSnap.docs[0].id;
+
+      // 2️⃣ Buscar tareas de ese voluntario
+      const tareasQuery = query(
+        collection(db, "tareas"),
+        where("idVoluntario", "==", voluntarioId)
+      );
+      const tareasSnap = await getDocs(tareasQuery);
+
+      const tareasData = [];
+      for (let tareaDoc of tareasSnap.docs) {
+        const tarea = { id: tareaDoc.id, ...tareaDoc.data() };
+
+        // traer nombre de mascota
         if (tarea.idMascota) {
           const mascotaRef = doc(db, "mascotas", tarea.idMascota);
           const mascotaSnap = await getDoc(mascotaRef);
@@ -23,46 +50,54 @@ export default function TareasVoluntario({ idVoluntario }) {
             tarea.mascota = mascotaSnap.data().nombre;
           }
         }
+
         tareasData.push(tarea);
       }
-    }
 
-    setTareas(tareasData);
-  };
-
-  const guardarObservacion = async (idTarea) => {
-    if (!observaciones[idTarea] || observaciones[idTarea].trim() === "") {
-      alert("Escribe una observación antes de guardar");
-      return;
+      setTareas(tareasData);
+    } catch (error) {
+      console.error("❌ Error obteniendo tareas:", error);
+    } finally {
+      setLoading(false);
     }
-    await updateDoc(doc(db, "tareas", idTarea), {
-      observacion: observaciones[idTarea]
-    });
-    alert("Observación guardada");
   };
 
   useEffect(() => {
     getTareas();
   }, []);
 
+  if (loading) return <p className="text-center mt-4">Cargando tareas...</p>;
+
   return (
-    <div>
-      <h2>Mis Tareas Asignadas</h2>
-      {tareas.length === 0 && <p>No tienes tareas asignadas</p>}
-      {tareas.map((t) => (
-        <div key={t.id} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
-          <p><strong>Mascota:</strong> {t.mascota || "Sin nombre"}</p>
-          <p><strong>Tipo:</strong> {t.tipo}</p>
-          <p><strong>Fecha:</strong> {t.fecha}</p>
-          <p><strong>Hora:</strong> {t.hora}</p>
-          <textarea
-            placeholder="Escribe observación..."
-            value={observaciones[t.id] || ""}
-            onChange={(e) => setObservaciones({ ...observaciones, [t.id]: e.target.value })}
-          />
-          <button onClick={() => guardarObservacion(t.id)}>Guardar Observación</button>
+    <div className="container mt-4">
+      <h2 className="text-center mb-4">Mis Tareas Asignadas</h2>
+
+      {tareas.length === 0 ? (
+        <p className="text-center text-muted">No tienes tareas asignadas</p>
+      ) : (
+        <div className="table-responsive shadow rounded-3">
+          <table className="table table-hover table-bordered align-middle">
+            <thead className="table-primary text-center">
+              <tr>
+                <th>Mascota</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tareas.map((t) => (
+                <tr key={t.id}>
+                  <td className="fw-bold">{t.mascota || "Sin nombre"}</td>
+                  <td>{t.tipo}</td>
+                  <td>{t.fecha}</td>
+                  <td>{t.hora}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      ))}
+      )}
     </div>
   );
 }
