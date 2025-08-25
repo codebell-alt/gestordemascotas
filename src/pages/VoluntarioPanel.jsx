@@ -1,6 +1,6 @@
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SidebarVoluntario from "../components/SidebarVoluntario";
 import TareasVoluntario from "../components/TareasVoluntario";
 import MascotasList from "../components/MascotasList";
@@ -8,13 +8,31 @@ import ObservacionesForm from "../components/ObservacionesForm";
 import logo from "../assets/logo.png";
 import "../styles/Dashboard.css";
 
-export default function VoluntarioPanel({ idVoluntario }) {
+export default function VoluntarioPanel() {
   const [selected, setSelected] = useState("tareas");
+  const [idVoluntario, setIdVoluntario] = useState(null);
+
+  useEffect(() => {
+    // Escuchar cambios de sesión
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIdVoluntario(user.uid); // Guardamos el UID
+      } else {
+        setIdVoluntario(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
     window.location.href = "/";
   };
+
+  if (!idVoluntario) {
+    return <p>Cargando panel...</p>;
+  }
 
   return (
     <div className="dashboard-container">
@@ -35,9 +53,13 @@ export default function VoluntarioPanel({ idVoluntario }) {
 
         <div className="dashboard-main">
           <div className="dashboard-card">
-            {selected === "tareas" && <TareasVoluntario idVoluntario={idVoluntario} />}
+            {selected === "tareas" && (
+              <TareasVoluntario idVoluntario={idVoluntario} />
+            )}
             {selected === "consultarMascota" && <MascotasList />}
-            {selected === "observaciones" && <ObservacionesForm idVoluntario={idVoluntario} />}
+            {selected === "observaciones" && (
+              <ObservacionesForm idVoluntario={idVoluntario} rol="voluntario" />
+            )}
           </div>
         </div>
       </div>
